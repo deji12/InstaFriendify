@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container full-height d-flex flex-column justify-content-center align-items-center">
+    <p class="h2">FAQ</p>
+    <div class="accordion" id="accordionExample" style="width: 70%;">
+        <!-- FAQ 1: How do I add an Instagram account? -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                    aria-expanded="true" aria-controls="collapseOne" style="width: 100%;">
+                    How do I add an Instagram account?
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    To add an Instagram account:
+                    <ol>
+                        <li>Click on the <strong>Add Account</strong> button in the navbar.</li>
+                        <li>Enter your Instagram username, password, and the maximum number of followers you want to add to close friends.</li>
+                        <li>Click <strong>Submit</strong> to connect your account.</li>
+                    </ol>
+                    <strong>Note:</strong> Make sure your credentials are correct, as the bot will verify them before adding the account.
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ 2: How do I scrape followers? -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    How do I get followers to add to close friends?
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    To get followers:
+                    <ol>
+                        <li>Go to the <strong>Accounts</strong> page.</li>
+                        <li>Find the account you want to get followers for.</li>
+                        <li>Click the <strong>Get Followers</strong> button.</li>
+                        <li>The bot will start scraping followers and save them to your account.</li>
+                    </ol>
+                    <strong>Note:</strong> You can only get followers once per account unless you reset the followers list.
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ 3: How do I add followers to Close Friends? -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    How do I add followers to Close Friends?
+                </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    To add followers to Close Friends:
+                    <ol>
+                        <li>Ensure you have already gotten followers for the account.</li>
+                        <li>Go to the <strong>Accounts</strong> page.</li>
+                        <li>Find the account you want to add followers to Close Friends for.</li>
+                        <li>Click the <strong>Add to Close Friends</strong> button.</li>
+                        <li>The bot will start adding followers to your Close Friends list.</li>
+                    </ol>
+                    <strong>Note:</strong> This process may take some time depending on the number of followers.
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ 4: How do I reset followers for an account? -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFour">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                    How do I reset followers for an account?
+                </button>
+            </h2>
+            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    To reset followers for an account:
+                    <ol>
+                        <li>Go to the <strong>Accounts</strong> page.</li>
+                        <li>Find the account you want to reset followers for.</li>
+                        <li>Click the <strong>Reset Followers</strong> button.</li>
+                        <li>This will clear the existing followers list, allowing you to scrape followers again.</li>
+                    </ol>
+                    <strong>Note:</strong> Resetting followers will delete the current list, so use this option carefully.
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ 5: How do I delete an Instagram account? -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFive">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                    How do I delete an Instagram account?
+                </button>
+            </h2>
+            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    To delete an Instagram account:
+                    <ol>
+                        <li>Go to the <strong>Accounts</strong> page.</li>
+                        <li>Find the account you want to delete.</li>
+                        <li>Click the <strong>Delete Account</strong> button.</li>
+                        <li>Confirm the deletion when prompted.</li>
+                    </ol>
+                    <strong>Note:</strong> This action is irreversible and will remove all data associated with the account.
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ 6: What should I do if I encounter an error? -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingSix">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                    What should I do if I encounter an error?
+                </button>
+            </h2>
+            <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    If you encounter an error:
+                    <ol>
+                        <li>Check the error message displayed on the screen.</li>
+                        <li>Ensure your Instagram credentials are correct.</li>
+                        <li>Make sure your account is not temporarily blocked by Instagram.</li>
+                        <li>If the issue persists, try resetting the account or deleting and re-adding it.</li>
+                        <li>Contact support if the problem continues.</li>
+                    </ol>
+                    <strong>Note:</strong> Some errors may be caused by Instagram's rate limits or security measures.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

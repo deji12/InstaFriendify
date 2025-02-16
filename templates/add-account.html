@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container full-height d-flex flex-column justify-content-center align-items-center">
+    <p class="h2">
+        {% if account %}
+            Update {{username}}
+        {% else %}
+            Add New Instagram Account
+        {% endif %}
+    </p>
+    <div class="form-container">
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- Card Holder Name Field -->
+            <div class="mb-3">
+                <label for="username" class="form-label">Username:</label>
+                <input type="text" class="form-control" {% if account %} value="{{username}}" {% endif %} id="username" placeholder="john_doe123" name="username" required>
+            </div>
+            
+            <!-- Card Number Field -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Password:</label>
+                <input type="password" class="form-control" id="password" name="password" 
+                       value="" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="number_of_followers" class="form-label">Number of followers to add:</label>
+                <input type="number" min="50" class="form-control" {% if account %} value="{{config.max_followers}}" {% endif %} id="number_of_followers" name="number_of_followers" required>
+            </div>
+
+           
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="description-text">
+  <h2>Item Max Prices</h2>
+  <p>Below you will find the list of items and max prices</p>
+  <button type="button" class="btn btn-primary" onclick="window.location.href = {% url 'add-max-price-item' %} ">Add item</button>
+</div>
+<div class="container full-height d-flex justify-content-center ">
+  <div class="scrollable-table">
+      <table class="table table-bordered">
+          <thead>
+          <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Max Price</th>
+                <th scope="col">Status</th>
+                <th scope="col">Date</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for i in max_prices %}
+            <tr>
+                <th scope="row">{{forloop.counter}}</th>
+                <td> <a href="{% url 'update-max-price-item' i.id %}">{{i.item_name}}</a> </td>
+                <td>{{i.max_price}}</td>
+                {% if i.status %}
+                  <td style="color: green;">Active</td>
+                {% else %}
+                  <td style="color: firebrick;">Inactive</td>
+                {% endif %}
+                <td>{{i.date}}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+  </div>
+</div>
+
+{% endblock content %}

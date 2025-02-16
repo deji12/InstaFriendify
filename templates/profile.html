@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container full-height d-flex flex-column justify-content-center align-items-center">
+    <p class="h2">Change Password</p>
+    <div class="form-container">
+        <form method="POST">
+            {% csrf_token %}
+            
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Pasword</label>
+                <input type="text" class="form-control" id="password" name="password" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="confirm_password" class="form-label">Confirm Pasword</label>
+                <input type="text" class="form-control" id="confirm_password" name="confirm_password" required>
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}
