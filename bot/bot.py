@@ -1,6 +1,5 @@
 from instagrapi import Client
 from instagrapi.exceptions import LoginRequired, BadPassword
-
 import time
 import os
 import logging
@@ -122,6 +121,12 @@ class InstagramBot:
         # saving user's account details
         with open(os.path.join(self.user_account, f'accounts/{username}.json'), 'w') as f:
             json.dump(account_data, f)
+
+        from Core.models import User
+
+        user = User.objects.get(username=self.user)
+        user.current_allocation += max_followers
+        user.save()
 
         return True, "Account connected successfully"
 
@@ -461,7 +466,8 @@ class InstagramBot:
     def reset_user_followers(self, username) -> None:
 
         self.username, self.password, self.config = self._get_account(username)
-    
+        max_followers = self.config.max_followers
+
         if os.path.exists(f'{self.followers_path}/{self.username}.txt'):
             os.remove(f'{self.followers_path}/{self.username}.txt')
         if os.path.exists(f'{self.last_added_path}/{self.username}.txt'):
@@ -476,11 +482,25 @@ class InstagramBot:
             with open(account_file, 'w') as f:
                 json.dump(account_data, f)
 
+        from Core.models import User
+
+        user = User.objects.get(username=self.user)
+        user.current_allocation -= max_followers
+        user.save()
+
         return True, "Account details reset successfully"
 
     def delete_ig_account(self, username):
 
         if self._ig_account_exists(username):
+
+            self.username, self.password, self.config = self._get_account(username)
+
+            from Core.models import User
+
+            user = User.objects.get(username=self.user)
+            user.current_allocation -= self.config.max_followers
+            user.save()
 
             if os.path.exists(f'{self.accounts_dir}/{username}.json'):
                 os.remove(f'{self.accounts_dir}/{username}.json')

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-k!8x9u0$@+y*s%bp9puo_p-k#n@^$^h!&by2)z^locg0jx#=%3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -75,13 +75,25 @@ WSGI_APPLICATION = 'CloseFriends.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'insta',  # The name of the database you created
+        'USER': 'admin',  # The username you created
+        'PASSWORD': 'theprotonguy18',  # The password for the user
+        'HOST': '203.161.53.121',  # Assuming the database is on the same server
+        'PORT': '5432',  # Default PostgreSQL port
     }
 }
 
+AUTH_USER_MODEL = 'Core.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -127,3 +139,4 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'login'
+

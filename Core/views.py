@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib import messages
-from django.contrib.auth.models import User
+from .models import User
 from bot.bot import InstagramBot
+from .utils import authenticate
 
 def Home(request):
 
@@ -44,7 +45,7 @@ def Register(request):
 
             return render(request, 'register.html', context)
 
-        User.objects.create(username=username, email=email, password=password, is_active=False)
+        User.objects.create_user(username=username, email=email, password=password)
 
         messages.success(request, "Account created successfully! You will be able to login once your account is activated")
         return redirect('login')
@@ -61,12 +62,12 @@ def Login(request):
             return redirect('login')
 
         user = authenticate(username=username, password=password)
-
-        if not user.is_active:
-            messages.error(request, 'Account is not active')
-            return redirect('login')
-        
         if user is not None:
+ 
+            if not user.is_active:
+                messages.error(request, 'Your account has not been activated')
+                return redirect('login')
+
             login(request, user)
             return redirect('accounts')
         
@@ -111,9 +112,10 @@ def Account(request, old_username=None):
 
         username = request.POST.get('username')
         password = request.POST.get('password')
-        number_of_followers = request.POST.get('number_of_followers')
+        # number_of_followers = request.POST.get('number_of_followers')
 
-        status, message = bot.update_ig_account(old_username, username, password, int(number_of_followers))
+        # status, message = bot.update_ig_account(old_username, username, password, int(number_of_followers))
+        status, message = bot.update_ig_account(old_username, username, password)
 
         messages.success(request, message) if status else messages.error(request, message)
         return redirect('update-instagram-acount', old_username=old_username)
@@ -126,6 +128,10 @@ def Account(request, old_username=None):
 
         if not (username and password and number_of_followers):
             messages.error(request, 'All fields are required')
+            return redirect('add-instagram-acount')
+        
+        if (int(number_of_followers) + request.user.current_allocation) > request.user.max_close_friends_allocation:
+            messages.error(request, f"The number of followers entered exceeds your current plan. You allocation space left is {request.user.max_close_friends_allocation - request.user.current_allocation} followers. Contact the admin to get more allocation space.")
             return redirect('add-instagram-acount')
         
         creation_status, message = bot.create_new_account(username, password, int(number_of_followers))
