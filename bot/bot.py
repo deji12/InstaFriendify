@@ -11,10 +11,6 @@ from dataclasses import dataclass, asdict
 import random
 from hikerapi import Client as HikerClient
 import json
-import uuid
-from django.core.cache import cache
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 
 # COLOR FORMATS
 HEADER = '\033[95m'
