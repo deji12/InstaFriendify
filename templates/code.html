@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container full-height d-flex flex-column justify-content-center align-items-center">
+    <p class="h2">Enter Verification Code</p>
+    <div class="verification-container">
+        <p>Instagram requires verification for account <strong id="username-display">{{request.session.username}}</strong>.</p>
+        <p>Please check your <span id="verification-method"></span> for a 6-digit code sent to your email or phone number.</p>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="verification-code" class="form-label">Verification Code:</label>
+                <input type="text" class="form-control" id="verification-code" maxlength="6" pattern="[0-9]{6}" name="code" required>
+            </div>
+            
+            <button type="button" id="btn" class="btn btn-primary w-100">
+            </span>
+            Submit code
+        </button>
+        </form>
+        <div id="status-message" class="mt-3"></div>
+    </div>
+</div>
+<script>
+
+    const btn = document.getElementById('btn');
+    btn.addEventListener('click', () => {
+        btn.disabled = true;
+        btn.innerHTML = `
+            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+            Submitting...
+        `;
+       btn.parentElement.submit();
+    });
+
+</script>
+{% endblock content %}

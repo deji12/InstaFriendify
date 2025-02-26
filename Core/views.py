@@ -139,6 +139,11 @@ def Account(request, old_username=None):
         if creation_status:
             messages.success(request, message)
             return redirect('accounts')
+        elif not creation_status and message == 'Enter the verification code sent to your email or phone number':
+            request.session['username'] = username
+            request.session['password'] = password
+            request.session['number_of_followers'] = number_of_followers
+            return redirect('verification-code')
         else:
             messages.error(request, message)
             return redirect('add-instagram-acount')
@@ -154,6 +159,39 @@ def Account(request, old_username=None):
         }
         
     return render(request, 'add-account.html', context)
+
+@login_required
+def VerificationCode(request):
+
+    bot = InstagramBot(user=request.user.username)
+
+    if request.method == 'POST':
+        
+        code = request.POST.get('code')
+
+        if not code:
+            messages.error(request, 'Verification code is required')
+            return redirect('verification-code')
+        
+        if len(code) != 6:
+            messages.error(request, 'Verification code must be 6 characters long')
+            return redirect('verification-code')
+
+        username = request.session['username'] 
+        password = request.session['password'] 
+        number_of_followers = request.session['number_of_followers']
+
+        creation_status, message = bot.create_new_account(username, password, int(number_of_followers), verification_code=code)
+
+        if creation_status:
+            messages.success(request, message)
+            return redirect('accounts')
+        
+        else:
+            messages.error(request, message)
+            return redirect('verification-code')
+
+    return render(request, 'code.html')
 
 @login_required
 def UserConnectedAccounts(request):

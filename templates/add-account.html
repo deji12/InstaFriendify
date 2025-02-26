@@ -30,11 +30,28 @@
                 <label for="number_of_followers" class="form-label">Number of followers to add:</label>
                 <input type="number" min="50" class="form-control" {% if account %} disabled value="{{config.max_followers}}" {% endif %} id="number_of_followers" name="number_of_followers">
             </div>
-
+            
            
             <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100">Submit</button>
+            <button type="button" id="btn" class="btn btn-primary w-100">
+                </span>
+                Submit
+            </button>
         </form>
     </div>
 </div>
+
+<script>
+
+    const btn = document.getElementById('btn');
+    btn.addEventListener('click', () => {
+        btn.disabled = true;
+        btn.innerHTML = `
+            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+            Submitting...
+        `;
+       btn.parentElement.submit();
+    });
+
+</script>
 {% endblock content %}

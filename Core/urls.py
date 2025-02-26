@@ -10,6 +10,7 @@ urlpatterns = [
     path('add-instagram-acount/', views.Account, name='add-instagram-acount'),
     path('edit-instagram-acount/<str:old_username>/', views.Account, name='update-instagram-acount'),
     path('accounts/', views.UserConnectedAccounts, name='accounts'),
+    path('accounts/verification-code/', views.VerificationCode, name='verification-code'),
     path('delete-connected-account/<str:username>/', views.DeleteIGAccount, name='delete-ig-account'),
     path('get-account-followers/<str:username>/', views.GetFollowers, name='get-account-followers'),
     path('reset-account-followers/<str:username>/', views.ResetAccountFollowers, name='reset-account-followers'),

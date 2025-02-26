@@ -1,5 +1,9 @@
 from instagrapi import Client
-from instagrapi.exceptions import LoginRequired, BadPassword
+from instagrapi.exceptions import (
+    LoginRequired, BadPassword, 
+    PrivateAccount, TwoFactorRequired,
+    ChallengeError, ChallengeRequired
+)
 import time
 import os
 import logging
@@ -7,6 +11,10 @@ from dataclasses import dataclass, asdict
 import random
 from hikerapi import Client as HikerClient
 import json
+import uuid
+from django.core.cache import cache
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 # COLOR FORMATS
 HEADER = '\033[95m'
@@ -27,6 +35,10 @@ class BotConfig:
     action_delay_min: int = 5  # Minimum delay between actions
     action_delay_max: int = 20  # Maximum delay between actions
 
+class InstagramChallengeRequired(Exception):
+    """Exception raised when Instagram requires a verification code"""
+    pass
+
 class InstagramBot:
     def __init__(self, user=None):
 
@@ -44,6 +56,8 @@ class InstagramBot:
             self.cache_path = os.path.join(self.base_data_dir, f'{self.user}/cache')
         
         self._setup_logging()
+
+    
     
     def _setup_directories(self, user) -> None:
 
@@ -85,14 +99,23 @@ class InstagramBot:
     def _ig_account_exists(self, username):
         return os.path.exists(f'{self.accounts_dir}/{username}.json')
 
-    def create_new_account(self, username, password, max_followers):
-        print(f"🤖 -> {HEADER}Received Instagram username & Password{ENDC} ")
+    def custom_code_handler(self, username, choice=None):
+        if self.verification_code is not None:
+            return self.verification_code
+        else:
+            raise InstagramChallengeRequired(f"Challenge required for {username} via {choice}")
+
+    def create_new_account(self, username, password, max_followers, verification_code=None):
+        print(f"🤖 -> {HEADER}Received Instagram username & password{ENDC}")
+
+        self.verification_code = verification_code
 
         if self._account_exists(username):
             return False, "An account with that username already exists"
 
         # Create a temporary client to test login
         temp_client = Client()
+        temp_client.challenge_code_handler = self.custom_code_handler
         try:
             if not temp_client.login(username, password):
                 return False, "Invalid credentials provided"
@@ -100,14 +123,10 @@ class InstagramBot:
                 self._setup_directories(self.user)
                 cache_path = f'{self.user_account}/cache/{username}_session.json'
                 temp_client.dump_settings(cache_path)
-           
-        except BadPassword as e:
-            return False, "Incorrect username or password. Please try again."
-           
-        except Exception as e:
-            print(e)
-            return False, "Invalid credentials provided"
-           
+
+        except InstagramChallengeRequired as e:
+            return False, "Enter the verification code sent to your email or phone number"
+
         # Save the account data only if login is successful
         config = BotConfig(max_followers=max_followers)
         account_data = {
@@ -118,7 +137,7 @@ class InstagramBot:
             'getting_followers': False,
         }
 
-        # saving user's account details
+        # Save user's account details
         with open(os.path.join(self.user_account, f'accounts/{username}.json'), 'w') as f:
             json.dump(account_data, f)
 
@@ -129,7 +148,7 @@ class InstagramBot:
         user.save()
 
         return True, "Account connected successfully"
-
+    
     def get_user_accounts(self):
         accounts = []
         if self._account_exists(self.user):
