@@ -1,8 +1,7 @@
 from instagrapi import Client
 from instagrapi.exceptions import (
     LoginRequired, BadPassword, 
-    PrivateAccount, TwoFactorRequired,
-    ChallengeError, ChallengeRequired
+    BadCredentials
 )
 import time
 import os
@@ -53,8 +52,6 @@ class InstagramBot:
         
         self._setup_logging()
 
-    
-    
     def _setup_directories(self, user) -> None:
 
         self.user_account = os.path.join(self.base_data_dir, f'{user}')
@@ -122,6 +119,12 @@ class InstagramBot:
 
         except InstagramChallengeRequired as e:
             return False, "Enter the verification code sent to your email or phone number"
+        
+        except BadPassword as e:
+            return False, "Incorrect username or password. Please try again."
+        
+        except BadCredentials as e:
+            return False, "Incorrect username or password. Please try again."
 
         # Save the account data only if login is successful
         config = BotConfig(max_followers=max_followers)
@@ -195,7 +198,9 @@ class InstagramBot:
         except Exception as e:
             logging.error(f"Failed to rename files for account '{old_username}': {e}")
 
-    def update_ig_account(self, old_username, username = None, password = None, number_of_followers = None):
+    def update_ig_account(self, old_username, username = None, password = None, number_of_followers = None, verification_code=None):
+
+        self.verification_code = verification_code
     
         account_file = os.path.join(self.accounts_dir, f'{old_username}.json')
         
@@ -210,6 +215,7 @@ class InstagramBot:
             # Validate credentials if username or password is being updated
             if account_data["username"] != username or account_data["password"] != password:
                 temp_client = Client()
+                temp_client.challenge_code_handler = self.custom_code_handle
                 try:
                     if not temp_client.login(username or old_username, password or account_data['password']):
                         return False, "Invalid credentials provided."
@@ -218,12 +224,14 @@ class InstagramBot:
                     cache_path = f'{self.user_account}/cache/{username or old_username}_session.json'
                     temp_client.dump_settings(cache_path)
                 
+                except InstagramChallengeRequired as e:
+                    return False, "Enter the verification code sent to your email or phone number"
+                
                 except BadPassword as e:
                     return False, "Incorrect username or password. Please try again."
                 
-                except Exception as e:
-                    logging.error(f"Login validation failed: {e}")
-                    return False, "Invalid username or password. Please try again."
+                except BadCredentials as e:
+                    return False, "Incorrect username or password. Please try again."
 
             # Update username if provided
             if account_data["username"] != username:

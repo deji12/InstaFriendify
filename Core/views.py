@@ -117,8 +117,20 @@ def Account(request, old_username=None):
         # status, message = bot.update_ig_account(old_username, username, password, int(number_of_followers))
         status, message = bot.update_ig_account(old_username, username, password)
 
-        messages.success(request, message) if status else messages.error(request, message)
-        return redirect('update-instagram-acount', old_username=old_username)
+        if status:
+            messages.success(request, message)
+            return redirect('accounts')
+        elif not status and message == 'Enter the verification code sent to your email or phone number':
+            request.session['username'] = username
+            request.session['password'] = password
+            request.session['mode'] = 'update'
+            return redirect('verification-code')
+        else:
+            messages.error(request, message)
+            return redirect('update-instagram-acount', old_username=old_username)
+
+        # messages.success(request, message) if status else messages.error(request, message)
+        # return redirect('update-instagram-acount', old_username=old_username)
 
     if request.method == 'POST':
 
@@ -143,6 +155,7 @@ def Account(request, old_username=None):
             request.session['username'] = username
             request.session['password'] = password
             request.session['number_of_followers'] = number_of_followers
+            request.session['mode'] = 'create'
             return redirect('verification-code')
         else:
             messages.error(request, message)
@@ -180,8 +193,12 @@ def VerificationCode(request):
         username = request.session['username'] 
         password = request.session['password'] 
         number_of_followers = request.session['number_of_followers']
+        mode = request.session['mode']
 
-        creation_status, message = bot.create_new_account(username, password, int(number_of_followers), verification_code=code)
+        if mode == 'update':
+            creation_status, message = bot.update_ig_account(username, password, verification_code=code)
+        else:
+            creation_status, message = bot.create_new_account(username, password, int(number_of_followers), verification_code=code)
 
         if creation_status:
             messages.success(request, message)

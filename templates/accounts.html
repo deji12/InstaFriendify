@@ -8,7 +8,7 @@
         {% for i in accounts %}
             <div class="col-auto">
                 <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ loop.index }}" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ loop.index }}" data-bs-toggle="dropdown" aria-expanded="false" style="margin: 5px">
                         {{ i.username }} ({{i.followers_count}})
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ loop.index }}">
