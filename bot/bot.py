@@ -10,6 +10,7 @@ from dataclasses import dataclass, asdict
 import random
 from hikerapi import Client as HikerClient
 import json
+from decouple import config
 
 # COLOR FORMATS
 HEADER = '\033[95m'
@@ -39,7 +40,7 @@ class InstagramBot:
 
         self.user = user
         self.base_data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../users'))
-        self.hiker_token = "i4ieo0kop49av9k8kjp0zul68pjwlbpf"
+        self.hiker_token = config('HIKER_TOKEN')
 
         if self.user is not None:
             self.accounts_dir = os.path.join(self.base_data_dir, f'{self.user}/accounts')
@@ -279,9 +280,18 @@ class InstagramBot:
             with open(account_file, 'w') as f:
                 json.dump(account_data, f)
         
-    def _initialize_client(self, username) -> Client:
+    def _initialize_client(self, username, add_to_close_friends_mode=False) -> Client:
         client = Client()
         client.delay_range = [1, 50]
+
+        if add_to_close_friends_mode:
+            proxy_login = config('PROXY_LOGIN')
+            proxy_password = config('PROXY_PASSWORD')
+            proxy_host = config('PROXY_HOST')
+            proxy_port = config('PROXY_PORT')
+            
+            proxy_url = f"http://{proxy_login}:{proxy_password}@{proxy_host}:{proxy_port}"
+            client.set_proxy(proxy_url)
 
         try:
             if os.path.exists(f'{self.cache_path}/{username}_session.json') and os.path.getsize(f'{self.cache_path}/{username}_session.json') > 0:
@@ -437,7 +447,7 @@ class InstagramBot:
     def add_to_close_friends(self, username):
 
         self.username, self.password, self.config = self._get_account(username)
-        self.client = self._initialize_client(username)
+        self.client = self._initialize_client(username, add_to_close_friends_mode=True)
         
         followers = self._read_followers(username)
         last_added = self._get_last_added(username)
