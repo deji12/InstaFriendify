@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+import uuid
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username=None, password=None, **extra_fields):
@@ -44,3 +45,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']  # No
+
+class PasswordResetCode(models.Model):
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    reset_id = models.UUIDField(default=uuid.uuid4, unique=True,editable=False)
+    created_when = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'Password reset for {self.user.username} at {self.created_when}'

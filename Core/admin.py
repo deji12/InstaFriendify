@@ -8,3 +8,9 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ['is_active']
 
 admin.site.register(User, UserAdmin)
+
+class PasswordResetCodeAdmin(admin.ModelAdmin):
+    list_display = ['user', 'reset_id', 'created_when']
+    list_filter = ['created_when']
+
+admin.site.register(PasswordResetCode, PasswordResetCodeAdmin)

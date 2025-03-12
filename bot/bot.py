@@ -26,7 +26,7 @@ UNDERLINE = '\033[4m'
 @dataclass
 class BotConfig:
     followers_batch_size: int = 200
-    batch_cooldown: int = 120
+    batch_cooldown: int = 60
     max_followers: int = 100  # Default value
     action_delay_min: int = 2  # Minimum delay between actions
     action_delay_max: int = 5  # Maximum delay between actions
@@ -470,7 +470,7 @@ class InstagramBot:
                 for follower in batch:
                     try:
                         self.client.close_friend_add(user_id=follower)
-                        logging.info(f"Added {follower} to Close Friends")
+                        logging.info(f"Added {follower} to Close Friends\n")
                         self._save_last_added(username, follower)
                         time.sleep(random.uniform(self.config.action_delay_min, self.config.action_delay_max))
                     except Exception as e:
