@@ -12,9 +12,9 @@
                         {{ i.username }} ({{i.followers_count}})
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ loop.index }}">
-                        <li><a class="dropdown-item {% if i.getting_followers %} disabled {% endif %}" href="{% url 'update-instagram-acount' i.username %}">Edit Credentials</a></li>
+                        <li><a class="dropdown-item {% if i.getting_followers or i.adding_to_close_friends %} disabled {% endif %}" href="{% url 'update-instagram-acount' i.username %}">Edit Credentials</a></li>
                         {% if not i.getting_followers %}
-                        <li><a class="dropdown-item {% if i.followers_count  > 0 %} disabled {% endif %}" href="{% url 'get-account-followers' i.username %}">Get followers</a></li>
+                          <li><a class="dropdown-item {% if i.followers_count  > 0 or i.adding_to_close_friends %} disabled {% endif %}" href="{% url 'get-account-followers' i.username %}">Get followers</a></li>
                         {% else %}
                           <li><a class="dropdown-item" href="#">
                             <button class="btn btn-success" type="button" disabled>
@@ -33,8 +33,8 @@
                             </button>
                           </a></li>
                         {% endif %}
-                        <li><a class="dropdown-item {% if i.getting_followers %} disabled {% endif %}" data-bs-toggle="modal" data-bs-target="#deleteAccount{{i.username}}" href="#">Reset account followers</a></li>
-                        <li><a class="dropdown-item {% if i.getting_followers %} disabled {% endif %}" data-bs-toggle="modal" data-bs-target="#deleteAccountModel{{i.username}}" href="#">Delete account</a></li>
+                        <li><a class="dropdown-item {% if i.getting_followers or i.adding_to_close_friends %} disabled {% endif %}" data-bs-toggle="modal" data-bs-target="#deleteAccount{{i.username}}" href="#">Reset account followers</a></li>
+                        <li><a class="dropdown-item {% if i.getting_followers or i.adding_to_close_friends %} disabled {% endif %}" data-bs-toggle="modal" data-bs-target="#deleteAccountModel{{i.username}}" href="#">Delete account</a></li>
                     </ul>
                 </div>
             </div>

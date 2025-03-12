@@ -4,14 +4,14 @@ from bot.bot import InstagramBot
 
 logger = get_task_logger(__name__)
 
-@app.task(name='get_account_followers')
+@app.task(name='get_account_followers', time_limit=14400, soft_time_limit=14000)
 def get_account_followers(user, username):
 
     bot = InstagramBot(user=user)
     # bot.get_followers_via_instagrapi(username=username)
     bot.get_followers_via_hiker(username=username)
 
-@app.task(name='add_followers_to_close_freinds')
+@app.task(name='add_followers_to_close_freinds', time_limit=14400, soft_time_limit=14000)
 def add_followers_to_close_freinds(user, username):
 
     bot = InstagramBot(user=user)

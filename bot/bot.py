@@ -25,11 +25,11 @@ UNDERLINE = '\033[4m'
 
 @dataclass
 class BotConfig:
-    followers_batch_size: int = 15
-    batch_cooldown: int = 240
+    followers_batch_size: int = 200
+    batch_cooldown: int = 120
     max_followers: int = 100  # Default value
-    action_delay_min: int = 5  # Minimum delay between actions
-    action_delay_max: int = 20  # Maximum delay between actions
+    action_delay_min: int = 2  # Minimum delay between actions
+    action_delay_max: int = 5  # Maximum delay between actions
 
 class InstagramChallengeRequired(Exception):
     """Exception raised when Instagram requires a verification code"""
@@ -282,7 +282,7 @@ class InstagramBot:
         
     def _initialize_client(self, username, add_to_close_friends_mode=False) -> Client:
         client = Client()
-        client.delay_range = [1, 50]
+        client.delay_range = [1, 5]
 
         if add_to_close_friends_mode:
             proxy_login = config('PROXY_LOGIN')
@@ -462,25 +462,29 @@ class InstagramBot:
         total_followers = len(followers)
 
         self.update_adding_to_close_friends_status(username, True)
-        for i in range(0, total_followers, batch_size):
-            batch = followers[i:i + batch_size]
-            logging.info(f"🤖 -> {OKCYAN}Processing batch {i // batch_size + 1}/{-(-total_followers // batch_size)}{ENDC}")
+        try:
+            for i in range(0, total_followers, batch_size):
+                batch = followers[i:i + batch_size]
+                logging.info(f"🤖 -> {OKCYAN}Processing batch {i // batch_size + 1}/{-(-total_followers // batch_size)}{ENDC}")
 
-            for follower in batch:
-                try:
-                    self.client.close_friend_add(user_id=follower)
-                    logging.info(f"Added {follower} to Close Friends")
-                    self._save_last_added(username, follower)
-                    time.sleep(random.uniform(self.config.action_delay_min, self.config.action_delay_max))
-                except Exception as e:
-                    self.update_adding_to_close_friends_status(username, False)
-                    logging.error(f"Failed to add {follower}: {e}")
+                for follower in batch:
+                    try:
+                        self.client.close_friend_add(user_id=follower)
+                        logging.info(f"Added {follower} to Close Friends")
+                        self._save_last_added(username, follower)
+                        time.sleep(random.uniform(self.config.action_delay_min, self.config.action_delay_max))
+                    except Exception as e:
+                        self.update_adding_to_close_friends_status(username, False)
+                        logging.error(f"Failed to add {follower}: {e}")
 
-            cooldown = random.uniform(self.config.batch_cooldown, self.config.batch_cooldown * 2)
-            logging.info(f"Cooling down for {cooldown:.2f} seconds...")
-            time.sleep(cooldown)
+                cooldown = random.uniform(self.config.batch_cooldown, self.config.batch_cooldown * 2)
+                logging.info(f"Cooling down for {cooldown:.2f} seconds...")
+                time.sleep(cooldown)
 
-        self.update_adding_to_close_friends_status(username, False)
+            self.update_adding_to_close_friends_status(username, False)
+        except Exception as e:
+            self.update_adding_to_close_friends_status(username, False)
+            print("Error: ", e)
 
     def _read_followers(self, username):
         with open(f'{self.followers_path}/{username}.txt', 'r') as f:
@@ -503,8 +507,11 @@ class InstagramBot:
 
         if os.path.exists(f'{self.followers_path}/{self.username}.txt'):
             os.remove(f'{self.followers_path}/{self.username}.txt')
-        if os.path.exists(f'{self.last_added_path}/{self.username}.txt'):
-            os.remove(f'{self.last_added_path}/{self.username}.txt')
+
+        # removed last added incase user wants to get more followers. Script will remember where it stopped
+
+        # if os.path.exists(f'{self.last_added_path}/{self.username}.txt'):
+        #     os.remove(f'{self.last_added_path}/{self.username}.txt')
 
         # Update the account's JSON file to include the number of followers
         account_file = os.path.join(self.accounts_dir, f'{self.username}.json')
