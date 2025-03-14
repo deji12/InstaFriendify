@@ -1,7 +1,7 @@
 from instagrapi import Client
 from instagrapi.exceptions import (
     LoginRequired, BadPassword, 
-    BadCredentials
+    BadCredentials, TwoFactorRequired, UnknownError
 )
 import time
 import os
@@ -99,7 +99,7 @@ class InstagramBot:
         else:
             raise InstagramChallengeRequired(f"Challenge required for {username} via {choice}")
 
-    def create_new_account(self, username, password, max_followers, verification_code=None):
+    def create_new_account(self, username, password, max_followers, verification_code=None, two_factor_verification_code=None):
         print(f"🤖 -> {HEADER}Received Instagram username & password{ENDC}")
 
         self.verification_code = verification_code
@@ -111,7 +111,11 @@ class InstagramBot:
         temp_client = Client()
         temp_client.challenge_code_handler = self.custom_code_handler
         try:
-            if not temp_client.login(username, password):
+            if not temp_client.login(
+                username = username, 
+                password = password, 
+                verification_code = two_factor_verification_code if two_factor_verification_code is not None else ''
+            ):
                 return False, "Invalid credentials provided"
             else:
                 self._setup_directories(self.user)
@@ -120,6 +124,12 @@ class InstagramBot:
 
         except InstagramChallengeRequired as e:
             return False, "Enter the verification code sent to your email or phone number"
+        
+        except TwoFactorRequired as e:
+            return False, "Two-factor authentication is required. Please enter the code sent to your email or phone number"
+        
+        except UnknownError as e:
+            return False, "Please enter a valid security code and try again"
         
         except BadPassword as e:
             return False, "Incorrect username or password. Please try again."
@@ -199,7 +209,7 @@ class InstagramBot:
         except Exception as e:
             logging.error(f"Failed to rename files for account '{old_username}': {e}")
 
-    def update_ig_account(self, old_username, username = None, password = None, number_of_followers = None, verification_code=None):
+    def update_ig_account(self, old_username, username = None, password = None, number_of_followers = None, verification_code=None, two_factor_verification_code=None):
 
         self.verification_code = verification_code
     
@@ -218,7 +228,11 @@ class InstagramBot:
                 temp_client = Client()
                 temp_client.challenge_code_handler = self.custom_code_handle
                 try:
-                    if not temp_client.login(username or old_username, password or account_data['password']):
+                    if not temp_client.login(
+                        username = username or old_username, 
+                        password = password or account_data['password'],
+                        verification_code = two_factor_verification_code if two_factor_verification_code is not None else ''
+                    ):
                         return False, "Invalid credentials provided."
                     
                     # Save the new session if credentials are valid
@@ -227,6 +241,12 @@ class InstagramBot:
                 
                 except InstagramChallengeRequired as e:
                     return False, "Enter the verification code sent to your email or phone number"
+                
+                except TwoFactorRequired as e:
+                    return False, "Two-factor authentication is required. Please enter the code sent to your email or phone number"
+                
+                except UnknownError as e:
+                    return False, "Please enter a valid security code and try again"
                 
                 except BadPassword as e:
                     return False, "Incorrect username or password. Please try again."

@@ -206,11 +206,20 @@ def Account(request, old_username=None):
         if status:
             messages.success(request, message)
             return redirect('accounts')
+        
         elif not status and message == 'Enter the verification code sent to your email or phone number':
             request.session['username'] = username
             request.session['password'] = password
             request.session['mode'] = 'update'
             return redirect('verification-code')
+        
+        elif not creation_status and message == 'Two-factor authentication is required. Please enter the code sent to your email or phone number':
+            request.session['username'] = username
+            request.session['password'] = password
+            request.session['number_of_followers'] = number_of_followers
+            request.session['mode'] = 'update-2fa-code-required'
+            return redirect('verification-code')
+        
         else:
             messages.error(request, message)
             return redirect('update-instagram-acount', old_username=old_username)
@@ -237,12 +246,21 @@ def Account(request, old_username=None):
         if creation_status:
             messages.success(request, message)
             return redirect('accounts')
+        
         elif not creation_status and message == 'Enter the verification code sent to your email or phone number':
             request.session['username'] = username
             request.session['password'] = password
             request.session['number_of_followers'] = number_of_followers
             request.session['mode'] = 'create'
             return redirect('verification-code')
+        
+        elif not creation_status and message == 'Two-factor authentication is required. Please enter the code sent to your email or phone number':
+            request.session['username'] = username
+            request.session['password'] = password
+            request.session['number_of_followers'] = number_of_followers
+            request.session['mode'] = '2fa-code-required'
+            return redirect('verification-code')
+
         else:
             messages.error(request, message)
             return redirect('add-instagram-acount')
@@ -261,6 +279,8 @@ def Account(request, old_username=None):
 
 @login_required
 def VerificationCode(request):
+
+    print(request.session.items())
 
     bot = InstagramBot(user=request.user.username)
 
@@ -281,8 +301,17 @@ def VerificationCode(request):
         number_of_followers = request.session['number_of_followers']
         mode = request.session['mode']
 
+        # Updating account 
         if mode == 'update':
             creation_status, message = bot.update_ig_account(username, password, verification_code=code)
+
+        elif mode == 'update-2fa-code-required':
+            creation_status, message = bot.update_ig_account(username, password, two_factor_verification_code=code)
+
+        # Account creation
+        elif mode == '2fa-code-required':
+            creation_status, message = bot.create_new_account(username, password, int(number_of_followers), two_factor_verification_code=code)
+        
         else:
             creation_status, message = bot.create_new_account(username, password, int(number_of_followers), verification_code=code)
 
