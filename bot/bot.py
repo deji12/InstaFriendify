@@ -43,10 +43,10 @@ class BotConfig:
         action_delay_max (int): Maximum delay between actions in seconds.
     """
     followers_batch_size: int = 200
-    batch_cooldown: int = 60
+    batch_cooldown: int = 30
     max_followers: int = 100  # Default value
-    action_delay_min: int = 2  # Minimum delay between actions
-    action_delay_max: int = 5  # Maximum delay between actions
+    action_delay_min: int = 1  # Minimum delay between actions
+    action_delay_max: int = 2  # Maximum delay between actions
 
 class InstagramChallengeRequired(Exception):
     """Exception raised when Instagram requires a verification code"""
@@ -357,7 +357,7 @@ class InstagramBot:
         
     def _initialize_client(self, username, add_to_close_friends_mode=False) -> Client:
         client = Client()
-        client.delay_range = [1, 5]
+        client.delay_range = [1, 2]
 
         if add_to_close_friends_mode:
             proxy_login = config('PROXY_LOGIN')
@@ -545,7 +545,7 @@ class InstagramBot:
                         self.client.close_friend_add(user_id=follower)
                         logging.info(f"Added {follower} to Close Friends\n")
                         self._save_last_added(username, follower)
-                        time.sleep(random.uniform(self.config.action_delay_min, self.config.action_delay_max))
+                        # time.sleep(random.uniform(self.config.action_delay_min, self.config.action_delay_max))
                     except Exception as e:
                         self.update_adding_to_close_friends_status(username, False)
                         logging.error(f"Failed to add {follower}: {e}")
