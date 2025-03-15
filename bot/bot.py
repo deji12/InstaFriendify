@@ -439,24 +439,21 @@ class InstagramBot:
         self._initialize_credentials(username)
         hiker_client = HikerClient(token=self.hiker_token)
         
-        followers = {}
-        followers_len = -1
-        end_cursor = None
+        followers = []
         
         self.update_getting_followers_status(username, True)
-        while len(followers) > followers_len:
-            followers_len = len(followers)
-            res, end_cursor = hiker_client.user_followers_chunk_gql(
-                user_id=self.user_id, 
-                end_cursor=end_cursor
-            )
-            followers.update({item['pk']: item for item in res})
-            
-            # Stop if max_followers is reached
-            if self.config.max_followers and len(followers) >= self.config.max_followers:
-                break
+        next_page_id = None
+
+        while len(followers) < self.config.max_followers:
         
-        followers_list = list(followers.values())[:self.config.max_followers]
+            get_followers = hiker_client.user_followers_v2(user_id=self.user_id, page_id=next_page_id)
+
+            for follower in get_followers["response"]["users"]:
+                followers.append(follower)
+            
+            next_page_id = get_followers["next_page_id"]
+        
+        followers_list = followers[:self.config.max_followers]
         
         self._save_followers_from_hiker(followers_list)
         self.update_getting_followers_status(username, False)
