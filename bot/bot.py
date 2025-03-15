@@ -2,7 +2,7 @@ from instagrapi import Client
 from instagrapi.exceptions import (
     LoginRequired, BadPassword, 
     BadCredentials, TwoFactorRequired, 
-    UnknownError
+    UnknownError, FeedbackRequired
 )
 import time
 import os
@@ -70,6 +70,7 @@ class InstagramBot:
         self.user = user
         self.base_data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../users'))
         self.hiker_token = config('HIKER_TOKEN')
+        self.feedback_error_sleep_time = 1800
 
         if self.user is not None:
             self.accounts_dir = os.path.join(self.base_data_dir, f'{self.user}/accounts')
@@ -79,7 +80,7 @@ class InstagramBot:
             self.followers_path = os.path.join(self.base_data_dir, f'{self.user}/followers')
             self.last_added_path = os.path.join(self.base_data_dir, f'{self.user}/last_added')
             self.cache_path = os.path.join(self.base_data_dir, f'{self.user}/cache')
-        
+
         self._setup_logging()
 
     def _setup_directories(self, user) -> None:
@@ -546,6 +547,10 @@ class InstagramBot:
                         logging.info(f"Added {follower} to Close Friends\n")
                         self._save_last_added(username, follower)
                         time.sleep(random.uniform(self.config.action_delay_min, self.config.action_delay_max))
+                    except FeedbackRequired as e:
+                        logging.error(f"Feedback required: {e}")
+                        logging.info("sleeping for 20 minutes")
+                        time.sleep(self.feedback_error_sleep_time)
                     except Exception as e:
                         self.update_adding_to_close_friends_status(username, False)
                         logging.error(f"Failed to add {follower}: {e}")
