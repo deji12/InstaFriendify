@@ -1,7 +1,8 @@
 from instagrapi import Client
 from instagrapi.exceptions import (
     LoginRequired, BadPassword, 
-    BadCredentials, TwoFactorRequired, UnknownError
+    BadCredentials, TwoFactorRequired, 
+    UnknownError
 )
 import time
 import os
@@ -11,6 +12,13 @@ import random
 from hikerapi import Client as HikerClient
 import json
 from decouple import config
+
+from Core.utils import (
+    VERIFICATION_CODE_REQUIRED_FOR_ACCOUNT,
+    TWO_FACTOR_REQUIRED_FOR_ACCOUNT,
+    UNKNOWN_ERROR,
+    INVALID_CREDENTIALS
+)
 
 # COLOR FORMATS
 HEADER = '\033[95m'
@@ -25,6 +33,15 @@ UNDERLINE = '\033[4m'
 
 @dataclass
 class BotConfig:
+    """
+    Configuration class for the Instagram bot.
+    Attributes:
+        followers_batch_size (int): Number of followers to process in a single batch.
+        batch_cooldown (int): Cooldown time between batches in seconds.
+        max_followers (int): Maximum number of followers to fetch.
+        action_delay_min (int): Minimum delay between actions in seconds.
+        action_delay_max (int): Maximum delay between actions in seconds.
+    """
     followers_batch_size: int = 200
     batch_cooldown: int = 60
     max_followers: int = 100  # Default value
@@ -36,6 +53,18 @@ class InstagramChallengeRequired(Exception):
     pass
 
 class InstagramBot:
+    """
+    A bot to automate interactions with Instagram, such as fetching followers and adding them to close friends.
+    Attributes:
+        user (str): The username of the bot operator.
+        base_data_dir (str): Base directory for storing user data.
+        hiker_token (str): Token for the Hiker API.
+        accounts_dir (str): Directory to store account data.
+        followers_path (str): Directory to store followers data.
+        last_added_path (str): Directory to store the last added follower.
+        cache_path (str): Directory to store session cache.
+        accounts (dict): Dictionary to store account details.
+    """
     def __init__(self, user=None):
 
         self.user = user
@@ -54,6 +83,7 @@ class InstagramBot:
         self._setup_logging()
 
     def _setup_directories(self, user) -> None:
+        """Create necessary directories for the user."""
 
         self.user_account = os.path.join(self.base_data_dir, f'{user}')
         os.makedirs(self.user_account, exist_ok=True)
@@ -63,6 +93,7 @@ class InstagramBot:
             os.makedirs(path, exist_ok=True)
 
     def _setup_logging(self):
+        """Configure logging for the bot."""
 
         logging.basicConfig(
             level=logging.INFO,
@@ -71,6 +102,8 @@ class InstagramBot:
         )
 
     def _load_accounts(self):
+        """Load account data from JSON files."""
+
         accounts = {}
         if os.path.exists(self.accounts_dir):
             for filename in os.listdir(self.accounts_dir):
@@ -81,6 +114,7 @@ class InstagramBot:
         return accounts
     
     def _get_account(self, username):
+        """Retrieve account details for a given username."""
 
         account_data = self.accounts[username]
         config = BotConfig(**account_data['config'])
@@ -88,19 +122,28 @@ class InstagramBot:
         return username, account_data['password'], config
 
     def _account_exists(self, account):
+        """Check if an account directory exists."""
+
         return os.path.exists(f'{self.base_data_dir}/{account}')
     
     def _ig_account_exists(self, username):
+        """Check if an Instagram account JSON file exists."""
+
         return os.path.exists(f'{self.accounts_dir}/{username}.json')
 
     def custom_code_handler(self, username, choice=None):
+        """Handle Instagram verification code requests."""
+
         if self.verification_code is not None:
             return self.verification_code
         else:
             raise InstagramChallengeRequired(f"Challenge required for {username} via {choice}")
 
     def create_new_account(self, username, password, max_followers, verification_code=None, two_factor_verification_code=None):
-        print(f"🤖 -> {HEADER}Received Instagram username & password{ENDC}")
+        
+        """Add a new Instagram account and save its details."""
+
+        logging.info(f"🤖 -> {HEADER}Received Instagram username & password{ENDC}")
 
         self.verification_code = verification_code
 
@@ -116,26 +159,26 @@ class InstagramBot:
                 password = password, 
                 verification_code = two_factor_verification_code if two_factor_verification_code is not None else ''
             ):
-                return False, "Invalid credentials provided"
+                return False, INVALID_CREDENTIALS
             else:
                 self._setup_directories(self.user)
                 cache_path = f'{self.user_account}/cache/{username}_session.json'
                 temp_client.dump_settings(cache_path)
 
         except InstagramChallengeRequired as e:
-            return False, "Enter the verification code sent to your email or phone number"
+            return False, VERIFICATION_CODE_REQUIRED_FOR_ACCOUNT
         
         except TwoFactorRequired as e:
-            return False, "Two-factor authentication is required. Please enter the code sent to your email or phone number"
+            return False, TWO_FACTOR_REQUIRED_FOR_ACCOUNT
         
         except UnknownError as e:
-            return False, "Please enter a valid security code and try again"
+            return False, UNKNOWN_ERROR
         
         except BadPassword as e:
-            return False, "Incorrect username or password. Please try again."
+            return False, INVALID_CREDENTIALS
         
         except BadCredentials as e:
-            return False, "Incorrect username or password. Please try again."
+            return False, INVALID_CREDENTIALS
 
         # Save the account data only if login is successful
         config = BotConfig(max_followers=max_followers)
@@ -160,6 +203,8 @@ class InstagramBot:
         return True, "Account connected successfully"
     
     def get_user_accounts(self):
+        """Retrieve a list of all user accounts."""
+
         accounts = []
         if self._account_exists(self.user):
             for filename in os.listdir(self.accounts_dir):
@@ -179,6 +224,7 @@ class InstagramBot:
         return accounts
     
     def _rename_account_files(self, old_username, new_username):
+        """Rename all files associated with an account when the username changes."""
     
         try:
             # Rename account file
@@ -209,7 +255,16 @@ class InstagramBot:
         except Exception as e:
             logging.error(f"Failed to rename files for account '{old_username}': {e}")
 
-    def update_ig_account(self, old_username, username = None, password = None, number_of_followers = None, verification_code=None, two_factor_verification_code=None):
+    def update_ig_account(
+            self, old_username, 
+            username = None, 
+            password = None, 
+            number_of_followers = None, 
+            verification_code=None,
+            two_factor_verification_code=None
+        ):
+
+        """Update an existing Instagram account's details."""
 
         self.verification_code = verification_code
     
@@ -240,19 +295,19 @@ class InstagramBot:
                     temp_client.dump_settings(cache_path)
                 
                 except InstagramChallengeRequired as e:
-                    return False, "Enter the verification code sent to your email or phone number"
+                    return False, VERIFICATION_CODE_REQUIRED_FOR_ACCOUNT
                 
                 except TwoFactorRequired as e:
-                    return False, "Two-factor authentication is required. Please enter the code sent to your email or phone number"
+                    return False, TWO_FACTOR_REQUIRED_FOR_ACCOUNT
                 
                 except UnknownError as e:
-                    return False, "Please enter a valid security code and try again"
+                    return False, UNKNOWN_ERROR
                 
                 except BadPassword as e:
-                    return False, "Incorrect username or password. Please try again."
+                    return False, INVALID_CREDENTIALS
                 
                 except BadCredentials as e:
-                    return False, "Incorrect username or password. Please try again."
+                    return False, INVALID_CREDENTIALS
 
             # Update username if provided
             if account_data["username"] != username:
@@ -330,7 +385,8 @@ class InstagramBot:
 
         except BadPassword as e:
             logging.error(f"Login failed: {e}")
-            print(f"🤖 -> {FAIL}Incorrect username or password. Please reset the account.{ENDC}")
+            logging.info(f"🤖 -> {FAIL}Incorrect username or password. Please reset the account.{ENDC}")
+           
             # Delete the account's JSON file
             account_file = os.path.join(self.accounts_dir, f'{self.username}.json')
             if os.path.exists(account_file):
@@ -362,7 +418,8 @@ class InstagramBot:
                 raise Exception("Failed to login with credentials")
         except BadPassword as e:
             logging.error(f"Login failed: {e}")
-            print(f"🤖 -> {FAIL}Incorrect username or password. Please try again.{ENDC}")
+            logging.info(f"🤖 -> {FAIL}Incorrect username or password. Please try again.{ENDC}")
+           
             # Delete the account's JSON file if it exists
             account_file = os.path.join(self.accounts_dir, f'{self.username}.json')
             if os.path.exists(account_file):
@@ -411,7 +468,7 @@ class InstagramBot:
             for follower in followers:
                 f.write(f"{follower.get('id')}\n")
                 logging.info(f"Saved follower: {follower.get('username')}")
-                print(f"🤖 -> {OKCYAN}Saved username{ENDC}: {WARNING}{follower.get('username')}{ENDC}")
+                logging.info(f"🤖 -> {OKCYAN}Saved username{ENDC}: {WARNING}{follower.get('username')}{ENDC}")
 
         # Update the account's JSON file to include the number of followers
         account_file = os.path.join(self.accounts_dir, f'{self.username}.json')
@@ -442,8 +499,7 @@ class InstagramBot:
         with open(f'{self.followers_path}/{self.username}.txt', 'w') as f:
             for uid, user in followers.items():
                 f.write(f'{uid}\n')
-                logging.info(f"Saved follower: {user.username}")
-                print(f"🤖 -> {OKCYAN}Saved username{ENDC}: {WARNING}{user.username}{ENDC}")
+                logging.info(f"🤖 -> {OKCYAN}Saved username{ENDC}: {WARNING}{user.username}{ENDC}")
 
         # Update the account's JSON file to include the number of followers
         account_file = os.path.join(self.accounts_dir, f'{self.username}.json')
@@ -504,7 +560,7 @@ class InstagramBot:
             self.update_adding_to_close_friends_status(username, False)
         except Exception as e:
             self.update_adding_to_close_friends_status(username, False)
-            print("Error: ", e)
+            logging.info("Error: ", e)
 
     def _read_followers(self, username):
         with open(f'{self.followers_path}/{username}.txt', 'r') as f:

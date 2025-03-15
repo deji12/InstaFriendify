@@ -4,7 +4,7 @@ from django.contrib.auth import login, logout
 from django.contrib import messages
 from .models import User, PasswordResetCode
 from bot.bot import InstagramBot
-from .utils import authenticate
+from .utils import *
 from django.urls import reverse
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -198,26 +198,27 @@ def Account(request, old_username=None):
 
         username = request.POST.get('username')
         password = request.POST.get('password')
-        # number_of_followers = request.POST.get('number_of_followers')
-
-        # status, message = bot.update_ig_account(old_username, username, password, int(number_of_followers))
+       
         status, message = bot.update_ig_account(old_username, username, password)
 
         if status:
             messages.success(request, message)
             return redirect('accounts')
         
-        elif not status and message == 'Enter the verification code sent to your email or phone number':
+        elif not status and message == VERIFICATION_CODE_REQUIRED_FOR_ACCOUNT:
+            
             request.session['username'] = username
             request.session['password'] = password
-            request.session['mode'] = 'update'
+            request.session['mode'] = INSTAGRAM_ACCOUNT_UPDATE_MODE
+
             return redirect('verification-code')
         
-        elif not creation_status and message == 'Two-factor authentication is required. Please enter the code sent to your email or phone number':
+        elif not creation_status and message == TWO_FACTOR_REQUIRED_FOR_ACCOUNT:
+            
             request.session['username'] = username
             request.session['password'] = password
-            request.session['number_of_followers'] = number_of_followers
-            request.session['mode'] = 'update-2fa-code-required'
+            request.session['mode'] = TWO_FACTOR_REQUIRED_ON_ACCOUNT_UPDATE
+
             return redirect('verification-code')
         
         else:
@@ -247,18 +248,20 @@ def Account(request, old_username=None):
             messages.success(request, message)
             return redirect('accounts')
         
-        elif not creation_status and message == 'Enter the verification code sent to your email or phone number':
+        elif not creation_status and message == VERIFICATION_CODE_REQUIRED_FOR_ACCOUNT:
+            
             request.session['username'] = username
             request.session['password'] = password
             request.session['number_of_followers'] = number_of_followers
-            request.session['mode'] = 'create'
+            request.session['mode'] = 'create-account'
             return redirect('verification-code')
         
-        elif not creation_status and message == 'Two-factor authentication is required. Please enter the code sent to your email or phone number':
+        elif not creation_status and message == TWO_FACTOR_REQUIRED_FOR_ACCOUNT:
+            
             request.session['username'] = username
             request.session['password'] = password
             request.session['number_of_followers'] = number_of_followers
-            request.session['mode'] = '2fa-code-required'
+            request.session['mode'] = INSTAGRAM_ACCOUNT_CREATION_MODE
             return redirect('verification-code')
 
         else:
@@ -280,8 +283,6 @@ def Account(request, old_username=None):
 @login_required
 def VerificationCode(request):
 
-    print(request.session.items())
-
     bot = InstagramBot(user=request.user.username)
 
     if request.method == 'POST':
@@ -302,17 +303,17 @@ def VerificationCode(request):
         mode = request.session['mode']
 
         # Updating account 
-        if mode == 'update':
+        if mode == INSTAGRAM_ACCOUNT_UPDATE_MODE:
             creation_status, message = bot.update_ig_account(username, password, verification_code=code)
 
-        elif mode == 'update-2fa-code-required':
+        elif mode == TWO_FACTOR_REQUIRED_ON_ACCOUNT_UPDATE:
             creation_status, message = bot.update_ig_account(username, password, two_factor_verification_code=code)
 
         # Account creation
-        elif mode == '2fa-code-required':
+        elif mode == TWO_FACTOR_REQUIRED_FOR_ACCOUNT:
             creation_status, message = bot.create_new_account(username, password, int(number_of_followers), two_factor_verification_code=code)
         
-        else:
+        else: # mode = create-account
             creation_status, message = bot.create_new_account(username, password, int(number_of_followers), verification_code=code)
 
         if creation_status:
