@@ -334,7 +334,7 @@ class InstagramBot:
             return True, f"Account '{username or old_username}' updated successfully."
 
         except Exception as e:
-            logging.error(f"Failed to update account '{old_username}': {e}")
+            print(f"Failed to update account '{old_username}': {e}")
             return False, f"Failed to update account '{old_username}'."
         
     def update_adding_to_close_friends_status(self, username, status):
