@@ -257,7 +257,8 @@ class InstagramBot:
             logging.error(f"Failed to rename files for account '{old_username}': {e}")
 
     def update_ig_account(
-            self, old_username, 
+            self, 
+            old_username, 
             username = None, 
             password = None, 
             number_of_followers = None, 
@@ -465,7 +466,6 @@ class InstagramBot:
         with open(f'{self.followers_path}/{self.username}.txt', 'w') as f:
             for follower in followers:
                 f.write(f"{follower.get('id')}\n")
-                logging.info(f"Saved follower: {follower.get('username')}")
                 logging.info(f"🤖 -> {OKCYAN}Saved username{ENDC}: {WARNING}{follower.get('username')}{ENDC}")
 
         # Update the account's JSON file to include the number of followers
@@ -537,7 +537,12 @@ class InstagramBot:
 
         self.update_adding_to_close_friends_status(username, True)
         try:
+            stop_processing = False
             for i in range(0, total_followers, batch_size):
+
+                if stop_processing:
+                    break
+
                 batch = followers[i:i + batch_size]
                 logging.info(f"🤖 -> {OKCYAN}Processing batch {i // batch_size + 1}/{-(-total_followers // batch_size)}{ENDC}")
 
@@ -547,13 +552,18 @@ class InstagramBot:
                         logging.info(f"Added {follower} to Close Friends\n")
                         self._save_last_added(username, follower)
                         time.sleep(random.uniform(self.config.action_delay_min, self.config.action_delay_max))
+
                     except FeedbackRequired as e:
+                        self.update_adding_to_close_friends_status(username, False)
                         logging.error(f"Feedback required: {e}")
-                        logging.info("sleeping for 20 minutes")
-                        time.sleep(self.feedback_error_sleep_time)
+                        stop_processing = True
+                        break
+
                     except Exception as e:
                         self.update_adding_to_close_friends_status(username, False)
                         logging.error(f"Failed to add {follower}: {e}")
+                        stop_processing = True
+                        break
 
                 cooldown = random.uniform(self.config.batch_cooldown, self.config.batch_cooldown * 2)
                 logging.info(f"Cooling down for {cooldown:.2f} seconds...")

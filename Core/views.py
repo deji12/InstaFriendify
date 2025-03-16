@@ -194,12 +194,14 @@ def Account(request, old_username=None):
 
     bot = InstagramBot(user=request.user.username)
 
-    if request.method == 'POST' and old_username is not None:
+    # user tries to update account 
+    if request.method == 'PATCH' and old_username is not None:
 
         username = request.POST.get('username')
         password = request.POST.get('password')
+        number_of_followers = request.POST.get('number_of_followers')
        
-        status, message = bot.update_ig_account(old_username, username, password)
+        status, message = bot.update_ig_account(old_username, username, password, number_of_followers)
 
         if status:
             messages.success(request, message)
@@ -209,6 +211,8 @@ def Account(request, old_username=None):
             
             request.session['username'] = username
             request.session['password'] = password
+            request.session['old_username'] = old_username
+            request.session['number_of_followers'] = number_of_followers
             request.session['mode'] = INSTAGRAM_ACCOUNT_UPDATE_MODE
 
             return redirect('verification-code')
@@ -217,6 +221,8 @@ def Account(request, old_username=None):
             
             request.session['username'] = username
             request.session['password'] = password
+            request.session['old_username'] = old_username
+            request.session['number_of_followers'] = number_of_followers
             request.session['mode'] = TWO_FACTOR_REQUIRED_ON_ACCOUNT_UPDATE
 
             return redirect('verification-code')
@@ -268,7 +274,9 @@ def Account(request, old_username=None):
             messages.error(request, message)
             return redirect('add-instagram-acount')
 
-    context = {}
+    context = {
+        'account': False
+    }
 
     if old_username:
         username, password, config = bot._get_account(old_username)
@@ -299,22 +307,45 @@ def VerificationCode(request):
 
         username = request.session['username'] 
         password = request.session['password'] 
+        old_username = request.session['old_username']
         number_of_followers = request.session['number_of_followers']
         mode = request.session['mode']
 
         # Updating account 
         if mode == INSTAGRAM_ACCOUNT_UPDATE_MODE:
-            creation_status, message = bot.update_ig_account(username, password, verification_code=code)
+            creation_status, message = bot.update_ig_account(
+                old_username = old_username,
+                username = username, 
+                password = password, 
+                number_of_followers = number_of_followers, 
+                verification_code = code
+            )
 
         elif mode == TWO_FACTOR_REQUIRED_ON_ACCOUNT_UPDATE:
-            creation_status, message = bot.update_ig_account(username, password, two_factor_verification_code=code)
+            creation_status, message = bot.update_ig_account(
+                old_username = old_username,
+                username = username, 
+                password = password, 
+                number_of_followers = number_of_followers, 
+                two_factor_verification_code=code
+            )
 
         # Account creation
         elif mode == TWO_FACTOR_REQUIRED_FOR_ACCOUNT:
-            creation_status, message = bot.create_new_account(username, password, int(number_of_followers), two_factor_verification_code=code)
+            creation_status, message = bot.create_new_account(
+                username, 
+                password, 
+                int(number_of_followers),
+                two_factor_verification_code=code
+            )
         
         else: # mode = create-account
-            creation_status, message = bot.create_new_account(username, password, int(number_of_followers), verification_code=code)
+            creation_status, message = bot.create_new_account(
+                username, 
+                password, 
+                int(number_of_followers), 
+                verification_code=code
+            )
 
         if creation_status:
             messages.success(request, message)

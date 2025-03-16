@@ -10,7 +10,7 @@
         {% endif %}
     </p>
     <div class="form-container">
-        <form method="POST">
+        <form {% if account %} method="PATCH" {% else %} method="POST" {% endif %}>
             {% csrf_token %}
 
             <!-- Card Holder Name Field -->
@@ -28,7 +28,7 @@
 
             <div class="mb-3">
                 <label for="number_of_followers" class="form-label">Number of followers to add:</label>
-                <input type="number" min="50" class="form-control" {% if account %} disabled value="{{config.max_followers}}" {% endif %} id="number_of_followers" name="number_of_followers">
+                <input type="number" min="100" class="form-control" {% if account %} value="{{config.max_followers}}" {% endif %} id="number_of_followers" name="number_of_followers">
             </div>
             
            
