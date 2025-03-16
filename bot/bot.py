@@ -275,15 +275,18 @@ class InstagramBot:
         if not os.path.exists(account_file):
             return False, f"Account '{old_username}' does not exist."
 
+        if username is None:
+            return False, "Username field can't be left empty"
+
         try:
             # Load the existing account data
             with open(account_file, 'r') as f:
                 account_data = json.load(f)
 
             # Validate credentials if username or password is being updated
-            if account_data["username"] != username or account_data["password"] != password:
+            if account_data["username"] != username or (password != None and account_data["password"] != password):
                 temp_client = Client()
-                temp_client.challenge_code_handler = self.custom_code_handle
+                temp_client.challenge_code_handler = self.custom_code_handler
                 try:
                     if not temp_client.login(
                         username = username or old_username, 
@@ -318,7 +321,7 @@ class InstagramBot:
                 account_data['username'] = username
 
             # Update password if provided
-            if password:
+            if password is not None and account_data['password'] != password:
                 account_data['password'] = password
 
             # Update number_of_followers if provided

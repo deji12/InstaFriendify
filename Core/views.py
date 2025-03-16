@@ -198,7 +198,7 @@ def Account(request, old_username=None):
     if request.method == 'POST' and old_username is not None:
 
         username = request.POST.get('username')
-        password = request.POST.get('password')
+        password = request.POST.get('password', None)
         number_of_followers = request.POST.get('number_of_followers')
        
         status, message = bot.update_ig_account(old_username, username, password, number_of_followers)
