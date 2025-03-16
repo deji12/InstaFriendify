@@ -69,6 +69,7 @@ class InstagramBot:
 
         self.user = user
         self.base_data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../users'))
+        self.user_account = os.path.join(self.base_data_dir, f'{self.user}')
         self.hiker_token = config('HIKER_TOKEN')
         self.feedback_error_sleep_time = 1800
 
@@ -85,8 +86,7 @@ class InstagramBot:
 
     def _setup_directories(self, user) -> None:
         """Create necessary directories for the user."""
-
-        self.user_account = os.path.join(self.base_data_dir, f'{user}')
+        
         os.makedirs(self.user_account, exist_ok=True)
 
         for subdir in ['accounts', 'cache', 'followers', 'last_added']:
@@ -285,6 +285,9 @@ class InstagramBot:
 
             # Validate credentials if username or password is being updated
             if account_data["username"] != username or (password != None and account_data["password"] != password):
+                print('preparing to login -----------------')
+                print(username)
+                print(f'{password}\n')
                 temp_client = Client()
                 temp_client.challenge_code_handler = self.custom_code_handler
                 try:
