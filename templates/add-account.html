@@ -10,7 +10,7 @@
         {% endif %}
     </p>
     <div class="form-container">
-        <form {% if account %} method="PATCH" {% else %} method="POST" {% endif %}>
+        <form method="POST">
             {% csrf_token %}
 
             <!-- Card Holder Name Field -->

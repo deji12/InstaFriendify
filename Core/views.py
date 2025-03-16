@@ -195,7 +195,7 @@ def Account(request, old_username=None):
     bot = InstagramBot(user=request.user.username)
 
     # user tries to update account 
-    if request.method == 'PATCH' and old_username is not None:
+    if request.method == 'POST' and old_username is not None:
 
         username = request.POST.get('username')
         password = request.POST.get('password')
