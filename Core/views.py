@@ -217,7 +217,7 @@ def Account(request, old_username=None):
 
             return redirect('verification-code')
         
-        elif not creation_status and message == TWO_FACTOR_REQUIRED_FOR_ACCOUNT:
+        elif not status and message == TWO_FACTOR_REQUIRED_FOR_ACCOUNT:
             
             request.session['username'] = username
             request.session['password'] = password
