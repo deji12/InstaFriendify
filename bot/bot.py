@@ -284,7 +284,7 @@ class InstagramBot:
                 account_data = json.load(f)
 
             # Validate credentials if username or password is being updated
-            if account_data["username"] != username or (password != None and account_data["password"] != password):
+            if account_data["username"] != username and (password is None or account_data["password"] != password):
                 print('preparing to login -----------------')
                 print(username)
                 print(f'{password}\n')
