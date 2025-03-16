@@ -257,90 +257,85 @@ class InstagramBot:
             logging.error(f"Failed to rename files for account '{old_username}': {e}")
 
     def update_ig_account(
-            self, 
-            old_username, 
-            username = None, 
-            password = None, 
-            number_of_followers = None, 
-            verification_code=None,
-            two_factor_verification_code=None
-        ):
-
+        self,
+        old_username,
+        username=None,
+        password=None,
+        number_of_followers=None,
+        verification_code=None,
+        two_factor_verification_code=None,
+    ):
         """Update an existing Instagram account's details."""
 
         self.verification_code = verification_code
-    
-        account_file = os.path.join(self.accounts_dir, f'{old_username}.json')
-        
+
+        account_file = os.path.join(self.accounts_dir, f"{old_username}.json")
+
+        # Check if the account file exists
         if not os.path.exists(account_file):
             return False, f"Account '{old_username}' does not exist."
 
+        # Ensure username is provided
         if username is None:
-            return False, "Username field can't be left empty"
+            return False, "Username field can't be left empty."
 
         try:
             # Load the existing account data
-            with open(account_file, 'r') as f:
+            with open(account_file, "r") as f:
                 account_data = json.load(f)
 
             # Validate credentials if username or password is being updated
-            if account_data["username"] != username and (password is None or account_data["password"] != password):
-                print('preparing to login -----------------')
-                print(username)
-                print(f'{password}\n')
+            if account_data["username"] != username or (
+                password is not None and account_data["password"] != password
+            ):
                 temp_client = Client()
                 temp_client.challenge_code_handler = self.custom_code_handler
+
                 try:
+                    # Attempt to log in with provided or existing credentials
                     if not temp_client.login(
-                        username = username or old_username, 
-                        password = password or account_data['password'],
-                        verification_code = two_factor_verification_code if two_factor_verification_code is not None else ''
+                        username=username or old_username,
+                        password=password or account_data["password"],
+                        verification_code=two_factor_verification_code or "",
                     ):
                         return False, "Invalid credentials provided."
-                    
+
                     # Save the new session if credentials are valid
-                    cache_path = f'{self.user_account}/cache/{username or old_username}_session.json'
+                    cache_path = f"{self.user_account}/cache/{username or old_username}_session.json"
                     temp_client.dump_settings(cache_path)
-                
-                except InstagramChallengeRequired as e:
+
+                except InstagramChallengeRequired:
                     return False, VERIFICATION_CODE_REQUIRED_FOR_ACCOUNT
-                
-                except TwoFactorRequired as e:
+                except TwoFactorRequired:
                     return False, TWO_FACTOR_REQUIRED_FOR_ACCOUNT
-                
-                except UnknownError as e:
+                except (BadPassword, BadCredentials):
+                    return False, INVALID_CREDENTIALS
+                except UnknownError:
                     return False, UNKNOWN_ERROR
-                
-                except BadPassword as e:
-                    return False, INVALID_CREDENTIALS
-                
-                except BadCredentials as e:
-                    return False, INVALID_CREDENTIALS
 
-            # Update username if provided
+            # Update username if provided and different
             if account_data["username"] != username:
-                # Rename all associated files
                 self._rename_account_files(old_username, username)
-                account_data['username'] = username
+                account_data["username"] = username
 
-            # Update password if provided
-            if password is not None and account_data['password'] != password:
-                account_data['password'] = password
+            # Update password if provided and different
+            if password is not None and account_data["password"] != password:
+                account_data["password"] = password
 
             # Update number_of_followers if provided
             if number_of_followers is not None:
-                account_data['config']['max_followers'] = number_of_followers
+                account_data["config"]["max_followers"] = number_of_followers
 
             # Save the updated account data back to the file
-            new_account_file = os.path.join(self.accounts_dir, f'{username or old_username}.json')
-            with open(new_account_file, 'w') as f:
-                json.dump(account_data, f)
+            new_account_file = os.path.join(self.accounts_dir, f"{username or old_username}.json")
+            with open(new_account_file, "w") as f:
+                json.dump(account_data, f, indent=4)
 
             logging.info(f"Account '{username or old_username}' updated successfully.")
             return True, f"Account '{username or old_username}' updated successfully."
 
         except Exception as e:
-            print(f"Failed to update account '{old_username}': {e}")
+            logging.error(f"Failed to update account '{old_username}': {e}")
             return False, f"Failed to update account '{old_username}'."
         
     def update_adding_to_close_friends_status(self, username, status):
