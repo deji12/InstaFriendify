@@ -311,7 +311,7 @@ def VerificationCode(request):
 
         username = request.session['username'] 
         password = request.session['password'] 
-        old_username = request.session['old_username']
+        old_username = request.session.get('old_username', None)
         number_of_followers = request.session['number_of_followers']
         mode = request.session['mode']
 
