@@ -149,11 +149,12 @@ class InstagramBot:
         self.verification_code = verification_code
 
         if self._account_exists(username):
-            return False, "An account with that username already exists"
+            return False, "Esiste già un account con quel nome utente"
 
         # Create a temporary client to test login
         temp_client = Client()
         temp_client.challenge_code_handler = self.custom_code_handler
+        # temp_client.set_user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
         try:
             if not temp_client.login(
                 username = username, 
@@ -201,7 +202,7 @@ class InstagramBot:
         user.current_allocation += max_followers
         user.save()
 
-        return True, "Account connected successfully"
+        return True, "Account collegato correttamente"
     
     def get_user_accounts(self):
         """Retrieve a list of all user accounts."""
@@ -273,12 +274,11 @@ class InstagramBot:
 
         # Check if the account file exists
         if not os.path.exists(account_file):
-            return False, f"Account '{old_username}' does not exist."
+            return False, f"Account '{old_username}' non esiste."
 
         # Ensure username is provided
         if username is None:
-            return False, "Username field can't be left empty."
-
+            return False, "Il campo Nome utente non può essere lasciato vuoto."
         try:
             # Load the existing account data
             with open(account_file, "r") as f:
@@ -298,7 +298,7 @@ class InstagramBot:
                         password=password or account_data["password"],
                         verification_code=two_factor_verification_code or "",
                     ):
-                        return False, "Invalid credentials provided."
+                        return False, INVALID_CREDENTIALS
 
                     # Save the new session if credentials are valid
                     cache_path = f"{self.user_account}/cache/{username or old_username}_session.json"
@@ -332,11 +332,11 @@ class InstagramBot:
                 json.dump(account_data, f, indent=4)
 
             logging.info(f"Account '{username or old_username}' updated successfully.")
-            return True, f"Account '{username or old_username}' updated successfully."
+            return True, f"Account '{username or old_username}'aggiornato con successo."
 
         except Exception as e:
             logging.error(f"Failed to update account '{old_username}': {e}")
-            return False, f"Failed to update account '{old_username}'."
+            return False, f"Impossibile aggiornare l'account '{old_username}'."
         
     def update_adding_to_close_friends_status(self, username, status):
        
@@ -431,12 +431,12 @@ class InstagramBot:
 
     def initialise_scrape_followers_task(self, username):
         if os.path.exists(f'{self.followers_path}/{username}.txt') and os.path.getsize(f'{self.followers_path}/{username}.txt') > 0:
-            return False, f"Followers already scraped for {username}. To get followers again, reset this account's followers."
+            return False, f"Follower già raccolti per {username}. Per ottenere nuovamente follower, reimposta i follower di questo account."
         
         from Core.tasks import get_account_followers
         
         get_account_followers.delay(user=self.user, username=username)
-        return True, f"We have started gathering followers for {username}."
+        return True, f"Raccolta di follower avviata con successo per {username}."
         
     def get_followers_via_hiker(self, username):
         self._initialize_credentials(username)
@@ -512,12 +512,12 @@ class InstagramBot:
     def intialize_close_friends_add(self, username):
 
         if not os.path.exists(f'{self.followers_path}/{username}.txt') or os.path.getsize(f'{self.followers_path}/{username}.txt') == 0: 
-            return False, "No followers found. Please select 'Get followers' before you can add followers to close friends."
+            return False, "Nessun follower trovato. Seleziona 'Ottieni follower' prima di poter aggiungere follower agli amici più stretti."
 
         from Core.tasks import add_followers_to_close_freinds
         
         add_followers_to_close_freinds.delay(user=self.user, username=username)
-        return True, f"Adding followers of {username} to close friends."
+        return True, f"Aggiunta di follower di {username} agli amici più stretti."
 
     def add_to_close_friends(self, username):
 
@@ -617,7 +617,7 @@ class InstagramBot:
         user.current_allocation -= max_followers
         user.save()
 
-        return True, "Account details reset successfully"
+        return True, "I dettagli dell'account sono stati reimpostati correttamente"
 
     def delete_ig_account(self, username):
 
@@ -643,6 +643,6 @@ class InstagramBot:
             if os.path.exists(f'{self.last_added_path}/{username}.txt'):
                 os.remove(f'{self.last_added_path}/{username}.txt')
 
-            return True, f"Account '{username}' deleted successfully"
+            return True, f"Account '{username}' eliminato con successo"
         
-        return False, f"No account with that username exists"
+        return False, f"Non esiste alcun account con quel nome utente"

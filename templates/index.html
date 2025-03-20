@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Index - Bootslander Bootstrap Template</title>
+  <title>Indice - Modello Bootstrap Bootslander</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
   {% load static %}
@@ -15,7 +15,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
   <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -36,19 +36,19 @@
       <a href="{% url 'home' %}" class="logo d-flex align-items-center">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="assets/img/logo.png" alt=""> -->
-        <h1 class="sitename">InstaFriendify</h1>
+        <h1 class="sitename">Amicipiustretti</h1>
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="#hero" class="active">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#features">Features</a></li>
+          <li><a href="#about">Chi Siamo</a></li>
+          <li><a href="#features">Caratteristiche</a></li>
           {% if request.user.is_authenticated %}
             <li><a href="{% url 'accounts' %}">Dashboard</a></li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
+            <li><a href="{% url 'logout' %}">Esci</a></li>
           {% else %}
-            <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'login' %}">Accedi</a></li>
           {% endif %} 
           
         </ul>
@@ -71,13 +71,13 @@
           </div>
 
           <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-in">
-            <h1>Automate Your Instagram Close Friends with <span>InstaFriendify</span></h1>
-            <p>Effortlessly add followers to your Close Friends list and manage your Instagram inner circle like a pro.</p>
+            <h1>Automatizza i tuoi Amici Stretti su Instagram con <span>Amicipiustretti</span></h1>
+            <p>Aggiungi facilmente i follower alla tua lista di Amici Stretti e gestisci la tua cerchia interna di Instagram come un professionista.</p>
             <div class="d-flex">
                 {% if not request.user.is_authenticated %}
-                    <a href="{% url 'login' %}" class="btn-get-started">Get Started</a>
+                    <a href="{% url 'login' %}" class="btn-get-started">Inizia</a>
                 {% else %}
-                    <a href="{% url 'accounts' %}" class="btn-get-started">Go to Dashboard</a>
+                    <a href="{% url 'accounts' %}" class="btn-get-started">Vai al Dashboard</a>
                 {% endif %}
             </div>
         </div>
@@ -109,12 +109,10 @@
     
           <!-- About Content -->
           <div class="col-xl-5 content">
-            <h3>About Us</h3>
-            <h2>Empowering Instagram Users with Automation</h2>
-            <p>At InstaFriendify, we’re passionate about simplifying Instagram management. Our tool helps you effortlessly
-              add followers to your Close Friends list, saving you time and enhancing your social media experience. Whether
-              you're a casual user or a social media pro, we’ve got you covered.</p>
-            <a href="#" class="read-more"><span>Learn More</span><i class="bi bi-arrow-right"></i></a>
+            <h3>Chi Siamo</h3>
+            <h2>Potenziare gli Utenti di Instagram con l'Automazione</h2>
+            <p>Su Amicipiustretti, siamo appassionati di semplificare la gestione di Instagram. Il nostro strumento ti aiuta ad aggiungere facilmente i follower alla tua lista di Amici Stretti, risparmiando tempo e migliorando la tua esperienza sui social media. Che tu sia un utente occasionale o un professionista dei social media, abbiamo tutto ciò di cui hai bisogno.</p>
+            <a href="#" class="read-more"><span>Scopri di più</span><i class="bi bi-arrow-right"></i></a>
           </div>
     
           <!-- Icon Boxes -->
@@ -125,8 +123,8 @@
               <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
                 <div class="icon-box">
                   <i class="bi bi-gear"></i>
-                  <h3>Easy to Use</h3>
-                  <p>Our intuitive interface makes managing your Close Friends list simple and hassle-free.</p>
+                  <h3>Facile da Usare</h3>
+                  <p>La nostra interfaccia intuitiva rende semplice e senza problemi la gestione della tua lista di Amici Stretti.</p>
                 </div>
               </div> <!-- End Icon Box -->
     
@@ -134,17 +132,17 @@
               <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
                 <div class="icon-box">
                   <i class="bi bi-stopwatch"></i>
-                  <h3>Time-Saving</h3>
-                  <p>Automate repetitive tasks and focus on what matters most—your content and engagement.</p>
+                  <h3>Risparmio di Tempo</h3>
+                  <p>Automatizza le attività ripetitive e concentrati su ciò che conta di più: i tuoi contenuti e il tuo coinvolgimento.</p>
                 </div>
               </div> <!-- End Icon Box -->
-    
+
               <!-- Feature 3: Secure & Reliable -->
               <div class="col-md-6" data-aos="fade-up" data-aos-delay="400">
                 <div class="icon-box">
                   <i class="bi bi-file-lock"></i>
-                  <h3>Secure & Reliable</h3>
-                  <p>We prioritize your account security and ensure reliable performance at all times.</p>
+                  <h3>Sicuro e affidabile</h3>
+                  <p>Diamo priorità alla sicurezza del tuo account e garantiamo prestazioni affidabili in ogni momento.</p>
                 </div>
               </div> <!-- End Icon Box -->
     
@@ -152,19 +150,14 @@
               <div class="col-md-6" data-aos="fade-up" data-aos-delay="500">
                 <div class="icon-box">
                   <i class="bi bi-card-list"></i>
-                  <h3>Multiple Accounts</h3>
-                  <p>Manage multiple Instagram accounts seamlessly with our powerful tools.</p>
+                  <h3>Conti multipli</h3>
+                  <p>Gestisci più account Instagram senza problemi grazie ai nostri potenti strumenti.</p>
                 </div>
               </div> <!-- End Icon Box -->
-    
-            </div>
           </div>
-    
-        </div>
       </div>
-    </section><!-- /About Section -->
+    </section><!-- Fine Sezione Caratteristiche -->
 
-    <!-- Features Section -->
     <section id="features" class="features section">
       <div class="container">
           <div class="row gy-4">
@@ -173,7 +166,7 @@
               <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="100">
                   <div class="features-item">
                       <i class="bi bi-people" style="color: #ffbb2c;"></i>
-                      <h3><a href="#" class="stretched-link">Add to Close Friends</a></h3>
+                      <h3><a href="#" class="stretched-link">Aggiungi agli amici più stretti</a></h3>
                       
                   </div>
               </div><!-- End Feature Item -->
@@ -182,7 +175,7 @@
               <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="200">
                   <div class="features-item">
                       <i class="bi bi-person-plus" style="color: #5578ff;"></i>
-                      <h3><a href="#" class="stretched-link">Scrape Followers</a></h3>
+                      <h3><a href="#" class="stretched-link">Raschiare follower</a></h3>
                   </div>
               </div><!-- End Feature Item -->
 
@@ -190,7 +183,7 @@
               <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="300">
                   <div class="features-item">
                       <i class="bi bi-person-badge" style="color: #e80368;"></i>
-                      <h3><a href="#" class="stretched-link">Multiple Accounts</a></h3>
+                      <h3><a href="#" class="stretched-link">Conti multipli</a></h3>
                   </div>
               </div><!-- End Feature Item -->
 
@@ -198,7 +191,7 @@
               <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="400">
                   <div class="features-item">
                       <i class="bi bi-shield-lock" style="color: #e361ff;"></i>
-                      <h3><a href="#" class="stretched-link">Secure & Reliable</a></h3>
+                      <h3><a href="#" class="stretched-link">Sicuro e affidabile</a></h3>
                   </div>
               </div><!-- End Feature Item -->
 
@@ -206,7 +199,7 @@
               <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="500">
                   <div class="features-item">
                       <i class="bi bi-clock" style="color: #47aeff;"></i>
-                      <h3><a href="#" class="stretched-link">Time-Saving Automation</a></h3>
+                      <h3><a href="#" class="stretched-link">Automazione che fa risparmiare tempo</a></h3>
                   </div>
               </div><!-- End Feature Item -->
 
@@ -214,7 +207,7 @@
               <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="600">
                   <div class="features-item">
                       <i class="bi bi-layout-text-sidebar" style="color: #ffa76e;"></i>
-                      <h3><a href="#" class="stretched-link">User-Friendly Interface</a></h3>
+                      <h3><a href="#" class="stretched-link">Interfaccia intuitiva</a></h3>
                   </div>
               </div><!-- End Feature Item -->
 
@@ -222,7 +215,7 @@
               <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="700">
                   <div class="features-item">
                       <i class="bi bi-arrow-repeat" style="color: #11dbcf;"></i>
-                      <h3><a href="#" class="stretched-link">Real-Time Updates</a></h3>
+                      <h3><a href="#" class="stretched-link">Aggiornamenti in tempo reale</a></h3>
                   </div>
               </div><!-- End Feature Item -->
 
@@ -230,89 +223,83 @@
               <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="800">
                   <div class="features-item">
                       <i class="bi bi-gear" style="color: #4233ff;"></i>
-                      <h3><a href="#" class="stretched-link">Customizable Settings</a></h3>
+                      <h3><a href="#" class="stretched-link">Impostazioni personalizzabili</a></h3>
                   </div>
               </div><!-- End Feature Item -->
 
           </div>
       </div>
-    </section><!-- /Features Section -->
+    </section>
 
-    <!-- Faq Section -->
+    <!-- Sezione FAQ -->
     <section id="faq" class="faq section light-background">
       <div class="container-fluid">
           <div class="row gy-4">
 
-              <!-- FAQ Content -->
+              <!-- Contenuto FAQ -->
               <div class="col-lg-7 d-flex flex-column justify-content-center order-2 order-lg-1">
                   <div class="content px-xl-5" data-aos="fade-up" data-aos-delay="100">
-                      <h3><span>Frequently Asked </span><strong>Questions</strong></h3>
+                      <h3><span>Domande Frequenti </span><strong>(FAQ)</strong></h3>
                       <p>
-                          Have questions about InstaFriendify? We’ve got answers! Here are some of the most common questions about our Instagram automation tool.
+                          Hai domande su Amicipiustretti? Abbiamo le risposte! Ecco alcune delle domande più comuni sul nostro strumento di automazione per Instagram.
                       </p>
                   </div>
 
-                  <!-- FAQ Items -->
+                  <!-- Elementi FAQ -->
                   <div class="faq-container px-xl-5" data-aos="fade-up" data-aos-delay="200">
 
-                      <!-- FAQ 1: What is InstaFriendify? -->
+                      <!-- FAQ 1: Cos'è Amicipiustretti? -->
                       <div class="faq-item faq-active">
                           <i class="faq-icon bi bi-question-circle"></i>
-                          <h3>What is InstaFriendify?</h3>
+                          <h3>Cos'è Amicipiustretti?</h3>
                           <div class="faq-content">
-                              <p>InstaFriendify is an Instagram automation tool designed to help you manage your Close Friends list effortlessly. It allows you to add followers to your Close Friends list, scrape followers, and automate repetitive tasks.</p>
+                              <p>Amicipiustretti è uno strumento di automazione per Instagram progettato per aiutarti a gestire facilmente la tua lista di Amici Stretti. Ti consente di aggiungere follower alla tua lista di Amici Stretti, raccogliere follower e automatizzare attività ripetitive.</p>
                           </div>
                           <i class="faq-toggle bi bi-chevron-right"></i>
-                      </div><!-- End Faq item-->
+                      </div><!-- Fine Elemento FAQ -->
 
-                      <!-- FAQ 2: How do I add followers to my Close Friends list? -->
+                      <!-- FAQ 2: Come aggiungo follower alla mia lista di Amici Stretti? -->
                       <div class="faq-item">
                           <i class="faq-icon bi bi-question-circle"></i>
-                          <h3>How do I add followers to my Close Friends list?</h3>
+                          <h3>Come aggiungo follower alla mia lista di Amici Stretti?</h3>
                           <div class="faq-content">
-                              <p>Simply log in to your account, select the followers you want to add, and click the "Add to Close Friends" button. InstaFriendify will handle the rest automatically.</p>
+                              <p>Accedi semplicemente al tuo account, seleziona i follower che desideri aggiungere e clicca sul pulsante "Aggiungi agli Amici Stretti". Amicipiustretti farà il resto automaticamente.</p>
                           </div>
                           <i class="faq-toggle bi bi-chevron-right"></i>
-                      </div><!-- End Faq item-->
+                      </div><!-- Fine Elemento FAQ -->
 
-                      <!-- FAQ 3: Can I manage multiple Instagram accounts? -->
+                      <!-- FAQ 3: Posso gestire più account Instagram? -->
                       <div class="faq-item">
                           <i class="faq-icon bi bi-question-circle"></i>
-                          <h3>Can I manage multiple Instagram accounts?</h3>
+                          <h3>Posso gestire più account Instagram?</h3>
                           <div class="faq-content">
-                              <p>Yes! InstaFriendify supports multiple Instagram accounts. You can easily switch between accounts and manage them all from one dashboard.</p>
+                              <p>Sì! Amicipiustretti supporta più account Instagram. Puoi facilmente passare da un account all'altro e gestirli tutti da un'unica dashboard.</p>
                           </div>
                           <i class="faq-toggle bi bi-chevron-right"></i>
-                      </div><!-- End Faq item-->
+                      </div><!-- Fine Elemento FAQ -->
 
-                      <!-- FAQ 4: Is InstaFriendify safe to use? -->
+                      <!-- FAQ 4: Amicipiustretti è sicuro da usare? -->
                       <div class="faq-item">
                           <i class="faq-icon bi bi-question-circle"></i>
-                          <h3>Is InstaFriendify safe to use?</h3>
+                          <h3>Amicipiustretti è sicuro da usare?</h3>
                           <div class="faq-content">
-                              <p>Absolutely. We prioritize your account security and use advanced encryption to protect your data. Our tool is designed to comply with Instagram's guidelines to minimize risks.</p>
+                              <p>Assolutamente. Diamo priorità alla sicurezza del tuo account e utilizziamo una crittografia avanzata per proteggere i tuoi dati. Il nostro strumento è progettato per rispettare le linee guida di Instagram per minimizzare i rischi.</p>
                           </div>
                           <i class="faq-toggle bi bi-chevron-right"></i>
-                      </div><!-- End Faq item-->
-
-                      
+                      </div><!-- Fine Elemento FAQ -->
 
                   </div>
               </div>
 
-              <!-- FAQ Image -->
+              <!-- Immagine FAQ -->
               <div class="col-lg-5 order-1 order-lg-2">
-                  <img src="{% static 'assets/img/faq.jpg' %}" class="img-fluid" alt="FAQ Illustration" data-aos="zoom-in" data-aos-delay="100">
+                  <img src="{% static 'assets/img/faq.jpg' %}" class="img-fluid" alt="Illustrazione FAQ" data-aos="zoom-in" data-aos-delay="100">
               </div>
           </div>
       </div>
-    </section><!-- /Faq Section -->
-
-  
+    </section><!-- Fine Sezione FAQ -->
 
   </main>
-
- 
 
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>

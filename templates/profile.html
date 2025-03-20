@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container full-height d-flex flex-column justify-content-center align-items-center">
-    <p class="h2">Change Password</p>
+    <p class="h2">Cambiare la password</p>
     <div class="form-container">
         <form method="POST">
             {% csrf_token %}
@@ -14,12 +14,12 @@
             </div>
 
             <div class="mb-3">
-                <label for="confirm_password" class="form-label">Confirm Pasword</label>
+                <label for="confirm_password" class="form-label">Conferma password</label>
                 <input type="text" class="form-control" id="confirm_password" name="confirm_password" required>
             </div>
             
             <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100">Submit</button>
+            <button type="submit" class="btn btn-primary w-100">Invia</button>
         </form>
     </div>
 </div>

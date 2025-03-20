@@ -4,9 +4,9 @@
 <div class="container full-height d-flex flex-column justify-content-center align-items-center">
     <p class="h2">
         {% if account %}
-            Update {{username}}
+            Aggiornamento {{username}}
         {% else %}
-            Add New Instagram Account
+            Aggiungi un nuovo account Instagram
         {% endif %}
     </p>
     <div class="form-container">
@@ -15,7 +15,7 @@
 
             <!-- Card Holder Name Field -->
             <div class="mb-3">
-                <label for="username" class="form-label">Username:</label>
+                <label for="username" class="form-label">Nome utente:</label>
                 <input type="text" class="form-control" {% if account %} value="{{username}}" {% endif %} id="username" placeholder="john_doe123" name="username" required>
             </div>
             
@@ -27,7 +27,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="number_of_followers" class="form-label">Number of followers to add:</label>
+                <label for="number_of_followers" class="form-label">Numero di follower da aggiungere:</label>
                 <input type="number" min="100" class="form-control" {% if account %} value="{{config.max_followers}}" {% endif %} id="number_of_followers" name="number_of_followers">
             </div>
             
@@ -35,7 +35,7 @@
             <!-- Submit Button -->
             <button type="button" id="btn" class="btn btn-primary w-100">
                 </span>
-                Submit
+                Invia
             </button>
         </form>
     </div>

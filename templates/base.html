@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
+    <title>Pagina Iniziale</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -11,31 +11,32 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">InstaFriendify</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand" href="{% url 'home' %}">Amicipiustretti</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Attiva/disattiva navigazione">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0"> <!-- Added ms-auto class -->
                   <li class="nav-item"></li>
-                    <a class="nav-link active" href="{% url 'accounts' %}">Accounts</a>
+                    <a class="nav-link active" href="{% url 'accounts' %}">Account</a>
                   </li>
                   <li class="nav-item"></li>
-                    <a class="nav-link active" href="{% url 'add-instagram-acount' %}">Add Account</a>
+                    <a class="nav-link active" href="{% url 'add-instagram-acount' %}">Aggiungi Account</a>
                   </li>
                   <li class="nav-item"></li>
-                    <a class="nav-link active" href="{% url 'help' %}">Help</a>
+                    <a class="nav-link active" href="{% url 'help' %}">Aiuto</a>
                   </li>
                   <li class="nav-item"></li>
-                    <a class="nav-link active" href="{% url 'profile' %}">Profile</a>
+                    <a class="nav-link active" href="{% url 'profile' %}">Profilo</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    <a class="nav-link" href="{% url 'logout' %}">Esci</a>
                   </li>
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <div class="container d-flex flex-column align-items-center">
         {% if messages %}
@@ -64,7 +65,7 @@
                 alertElement.style.display = 'none'; // Hide each alert element
             });
         }
-    }, 15000); // 15000 milliseconds = 15 seconds
+    }, 30000); // 15000 milliseconds = 30 seconds
     
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
